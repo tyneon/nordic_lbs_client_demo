@@ -1,0 +1,22 @@
+name: nordic_lbs_client_demo
+description: A client application for nRF Connect SDK peripheral_lbs sample
+
+version: 0.0.1
+
+environment:
+  sdk: '>=3.1.2 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_reactive_ble: ^5.2.0
+  provider: ^6.0.5
+#  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
