@@ -1,42 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:nordic_lbs_client_demo/lbs.dart';
-import 'package:nordic_lbs_client_demo/ble/ble_scanner.dart';
+import 'package:nordic_lbs_client_demo/ble.dart' as ble;
 
-class DeviceList extends StatefulWidget {
-  const DeviceList(
-    this.scannerState, {
-    required this.startScan,
-    required this.stopScan,
-    super.key,
-  });
+// import 'package:nordic_lbs_client_demo/lbs.dart' as lbs;
+import 'package:nordic_lbs_client_demo/ui/device_screen.dart';
 
-  final BleScannerState scannerState;
-  final void Function(List<Uuid>) startScan;
-  final VoidCallback stopScan;
+class DeviceList extends ConsumerWidget {
+  const DeviceList({super.key});
 
   @override
-  State<DeviceList> createState() => _DeviceListState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scanner = ref.watch(ble.scannerProvider);
+    final scannerNotifier = ref.read(ble.scannerProvider.notifier);
 
-class _DeviceListState extends State<DeviceList> {
-  @override
-  Widget build(BuildContext context) {
-    final lbsDevices = widget.scannerState.discoveredDevices
-        .where((device) => device.serviceUuids.contains(Uuid.parse(lbsId)))
-        .toList();
-    lbsDevices.sort((a, b) => a.rssi.compareTo(b.rssi));
+    final lbsDevices = scanner.devices;
 
     return Flexible(
       child: ListView(
         children: lbsDevices
             .map(
               (device) => ListTile(
-                title: Text(device.name),
-                subtitle: Text("${device.id}\nRSSI: ${device.rssi}"),
-                leading: const Icon(Icons.bluetooth),
-                onTap: () {},
+                title: Text(
+                  device.name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      device.id,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text("RSSI: ${device.rssi}"),
+                  ],
+                ),
+                leading: Icon(
+                  Icons.bluetooth,
+                  size: 30,
+                  color: scanner.scanning ? Colors.blue : Colors.black54,
+                ),
+                onTap: () async {
+                  scannerNotifier.stop();
+                  ref.read(ble.connectedDeviceProvider.notifier).update(device);
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DeviceScreen(device),
+                    ),
+                  );
+                  ref.read(ble.connectedDeviceProvider.notifier).clear();
+                  scannerNotifier.start([]);
+                },
               ),
             )
             .toList(),

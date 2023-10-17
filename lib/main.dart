@@ -1,54 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:nordic_lbs_client_demo/ui/home_screen.dart';
-import 'package:nordic_lbs_client_demo/ui/lbs_screen.dart';
 import 'package:nordic_lbs_client_demo/ui/scan_screen.dart';
-import 'package:nordic_lbs_client_demo/ble/ble_scanner.dart';
-import 'package:nordic_lbs_client_demo/ble/ble_status_monitor.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ble = FlutterReactiveBle();
-    final scanner = BleScanner(ble);
-    final monitor = BleStatusMonitor(ble);
-
-    return MultiProvider(
-      providers: [
-        Provider.value(value: scanner),
-        Provider.value(value: monitor),
-        StreamProvider<BleScannerState?>(
-          create: (_) => scanner.state,
-          initialData: const BleScannerState(
-            discoveredDevices: [],
-            scanning: false,
-          ),
+    return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
         ),
-        StreamProvider<BleStatus?>(
-          create: (_) => monitor.state,
-          initialData: BleStatus.unknown,
+        textTheme: const TextTheme(
+          titleMedium: TextStyle(fontSize: 24),
+          bodyMedium: TextStyle(fontSize: 16),
         ),
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
-        title: 'Nordic LBS Client Demo',
-        home: const HomeScreen(),
-        routes: {
-          "lbs": (context) => const LBSPage(),
-          "scan": (context) => const ScanPage(),
-        },
       ),
+      title: 'Nordic LBS Client Demo',
+      home: const ScanPage(),
     );
   }
 }

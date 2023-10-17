@@ -2,22 +2,27 @@
 
 A client application for nRF Connect SDK peripheral_lbs sample.
 
-Created as an exercise in Flutter BLE and stream subscription.
+Created as an exercise in Flutter BLE and Riverpod.
 
 Sources:
 
 * [Nordic LED Button Service documentation](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/libraries/bluetooth_services/services/lbs.html)
 * [Flutter reactive BLE example using StreamProvider](https://github.com/ubiqueIoT/flutter-reactive-ble-example/tree/master)
 
-## Getting Started
+## What does it do
 
-This project is a starting point for a Flutter application.
+App scans for Bluetooth devices and allows connecting to them if they have Nordic LBS service
+running.
 
-A few resources to get you started if this is your first Flutter project:
+When connected, app displays Nordic LBS Button status (pressed, released) and allows toggling Nordic
+LBS LED on and off.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Before building
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Project uses Riverpod with code generation.
+Riverpod provider code should be generated before building.
+
+```shell
+flutter pub get
+dart run build_runner watch -d 
+```
