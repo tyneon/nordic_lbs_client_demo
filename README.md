@@ -24,5 +24,5 @@ Riverpod provider code should be generated before building.
 
 ```shell
 flutter pub get
-dart run build_runner watch -d 
+dart run build_runner build -d 
 ```
